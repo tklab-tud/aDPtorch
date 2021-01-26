@@ -4,6 +4,9 @@ from typing import List, Union
 import os
 
 def generate_noise(max_norm, parameter, noise_multiplier, noise_type, device):
+    """
+    A noise generation function that can utilize different distributions for noise generation.
+    """
     if noise_multiplier > 0:
         mean = 0
         scale_scalar = noise_multiplier * max_norm
@@ -25,14 +28,23 @@ def generate_noise(max_norm, parameter, noise_multiplier, noise_type, device):
         return noise
     return 0.0
 
+# Server side Noise
 def apply_noise(weights, batch_size, noise_multiplier, noise_type, device, loss_reduction="mean"):
+    """
+    A function for applying noise to weights on the (intermediate) server side that utilizes the generate_noise function above.
+    """
     for p in weights.values():
         noise = generate_noise(0, p, noise_multiplier, noise_type, device)
         if loss_reduction == "mean":
             noise /= batch_size
         p += noise
 
+# Client side Noise
 class PrivacyEngineXL(opacus.PrivacyEngine):
+    """
+    A privacy engine that can utilize different distributions for noise generation, based on opacus' privacy engine.
+    It gets attached to the optimizer just like the privacy engine from opacus.
+    """
 
     def __init__(
         self,
