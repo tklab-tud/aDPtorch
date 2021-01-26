@@ -3,10 +3,10 @@ import opacus
 from typing import List, Union
 import os
 
-def generate_noise(max_norm, parameter, sigma, noise_type, device):
-    if sigma > 0:
+def generate_noise(max_norm, parameter, noise_multiplier, noise_type, device):
+    if noise_multiplier > 0:
         mean = 0
-        scale_scalar = sigma * max_norm
+        scale_scalar = noise_multiplier * max_norm
 
         scale = torch.full(size=parameter.shape, fill_value=scale_scalar, dtype=torch.float32, device=device)
 
@@ -25,9 +25,9 @@ def generate_noise(max_norm, parameter, sigma, noise_type, device):
         return noise
     return 0.0
 
-def apply_noise(weights, batch_size, sigma, noise_type, device, loss_reduction="mean"):
+def apply_noise(weights, batch_size, noise_multiplier, noise_type, device, loss_reduction="mean"):
     for p in weights.values():
-        noise = generate_noise(0, p, sigma, noise_type, device)
+        noise = generate_noise(0, p, noise_multiplier, noise_type, device)
         if loss_reduction == "mean":
             noise /= batch_size
         p += noise
