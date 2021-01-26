@@ -75,23 +75,4 @@ class PrivacyEngineXL(opacus.PrivacyEngine):
         self.noise_type = noise_type
 
     def _generate_noise(self, max_norm, parameter):
-        if self.noise_multiplier > 0:
-            mean = 0
-            scale_scalar = self.noise_multiplier * max_norm
-
-            scale = torch.full(size=parameter.grad.shape, fill_value=scale_scalar, dtype=torch.float32, device=self.device)
-
-            if self.noise_type == "gaussian":
-                dist = torch.distributions.normal.Normal(mean, scale)
-            elif self.noise_type == "laplacian":
-                dist = torch.distributions.laplace.Laplace(mean, scale)
-            elif self.noise_type == "exponential":
-                rate = 1 / scale
-                dist = torch.distributions.exponential.Exponential(rate)
-            else:
-                dist = torch.distributions.normal.Normal(mean, scale)
-
-            noise = dist.sample()
-
-            return noise
-        return 0.0
+        return generate_noise(max_norm, parameter, self.noise_multiplier, self.noise_type, self.device)
