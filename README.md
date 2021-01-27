@@ -5,11 +5,11 @@ An **advanced Differential Privacy** library for *pyTorch*, based on [opacus](ht
 ## Current Features
 
 - **privacy_engine_xl**
-  - additional noise distributions
-    - Gauss (Normal)
-    - Laplace
-    - Exponential
-  - server side noise generation function
+    - additional noise distributions
+        - Gauss (Normal)
+        - Laplace
+        - Exponential
+    - server side noise generation function
 
 ## License
 
